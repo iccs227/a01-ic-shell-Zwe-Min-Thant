@@ -1,6 +1,6 @@
 /* ICCS227: Project 1: icsh
- * Name:
- * StudentID:
+ * Name: Zwe Min Thant
+ * StudentID: 6581183
  */
 
 #include "stdio.h"
@@ -15,3 +15,4 @@ int main() {
         printf("you said: %s\n", buffer);
     }
 }
+
