@@ -1,33 +1,41 @@
 #include <stdio.h>
-#include <string.h>
+#include <stdlib.h>
+#include "Toknizer.h"
+#define buffsize 255
 
 
 
-char toknizer(char* string); 
-
-int main(){
+char* toknizer(void){
 	
-	char string = "echo COMMANDS1 COMMANDS2 COMMANDS3";
-	char arr[] = toknizer(string);
-	for(int i = 0; i < sizeof(arr); i++){
-		printf("%s\n", arr[i]);
+	int buffersize = buffsize;
+	int pos = 0; 
+	char *buffer = malloc(sizeof(char) * buffersize); 
+	int c; 
+
+	while(1){
+		printf("icsh $ ");
+		c = getchar(); 
+		
+		if(c == EOF || c == '\n'){ 
+			buffer[pos] = '\0';
+			return buffer;
+		}
+		else{
+			buffer[pos] = c; 
+		}
+		pos++; 
+
+		if(pos >= buffersize){
+			buffersize += buffersize;
+			buffer = realloc(buffer, buffersize);
+		}
 	}
-	return 0;
 }
 
-char toknizer(char* string){
-	
-	char arr[] = malloc(sizeof(char)*strlen(string));
+char* commandChecker(char* input){
 
-	char* token = strtok(string, " ");
-	
-	int i = 0; 
+	char* cmd = strtok(input, " ");
 
-	while(token != NULL){
-		arr[i] = token;
-		i++;
-	}
+	return cmd;
 
-	return arr;
-	
 }
