@@ -1,8 +1,22 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "Toknizer.h"
+#include "./headers/Toknizer.h"
+
+
 #define buffsize 255
 
+
+int main(void){
+
+	char* input = toknieze();
+	char* cmd = commandChecker;
+
+	printf("%s\n", input);
+	printf("%s\n", cmd);
+
+	return 0; 
+	
+}
 
 
 char* toknizer(void){
@@ -35,7 +49,6 @@ char* toknizer(void){
 char* commandChecker(char* input){
 
 	char* cmd = strtok(input, " ");
-
 	return cmd;
 
 }
