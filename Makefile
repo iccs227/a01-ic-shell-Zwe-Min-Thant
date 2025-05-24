@@ -2,13 +2,13 @@ CC=gcc
 CFLAGS=-Wall -g 
 BINARY=icsh
 
-all: icsh MileStone
+all: $(BINARY) 
 
-icsh: icsh.c
-	$(CC) -o $(BINARY) $(CFLAGS) $<
-MileStone: MileStone1.c
-	$(CC) -o MileStone $(CFLAGS) $<
+$(BINARY): ./icsh.c ./Toknizer.c ./MileStone1.c
+	$(CC) -o $(BINARY) $(CFLAGS) ./icsh.c ./Toknizer.c ./MileStone1.c
+
 .PHONY: clean
 
 clean:
-	rm -f $(BINARY)
+	rm -f sourceCodes/*.o $(BINARY)
+   

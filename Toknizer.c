@@ -1,23 +1,11 @@
+
 #include <stdio.h>
+#include <string.h>
 #include <stdlib.h>
-#include "./headers/Toknizer.h"
+#include "./Toknizer.h"
 
 
 #define buffsize 255
-
-
-int main(void){
-
-	char* input = toknieze();
-	char* cmd = commandChecker;
-
-	printf("%s\n", input);
-	printf("%s\n", cmd);
-
-	return 0; 
-	
-}
-
 
 char* toknizer(void){
 	
@@ -25,9 +13,8 @@ char* toknizer(void){
 	int pos = 0; 
 	char *buffer = malloc(sizeof(char) * buffersize); 
 	int c; 
-
+	printf("icsh $ ");
 	while(1){
-		printf("icsh $ ");
 		c = getchar(); 
 		
 		if(c == EOF || c == '\n'){ 
@@ -40,15 +27,16 @@ char* toknizer(void){
 		pos++; 
 
 		if(pos >= buffersize){
-			buffersize += buffersize;
 			buffer = realloc(buffer, buffersize);
 		}
 	}
 }
 
+//correct 
 char* commandChecker(char* input){
-
-	char* cmd = strtok(input, " ");
+	char* cmd = malloc(strlen(input) + 1);
+	strcpy(cmd, input);
+	cmd = strtok(cmd, " ");
 	return cmd;
 
 }

@@ -4,17 +4,22 @@
  */
 
 #include "stdio.h"
-#include "./headers/Toknizer.h"
-#include "./headers/MileStone1.h"
+#include <string.h>
+#include <stdlib.h>
+#include "./Toknizer.h"
+#include "./MileStone1.h"
 
-    int loop;
-    int exit_code;
+
+int loop; 
+int exit_code;
 
 int main() {
 
     char* input; 
-    char* cmd; 
-
+    char* cmd;
+    loop = 1; 
+    char* pastcmd = malloc(225 * sizeof(char));
+    
     while(loop != 0){
         input = toknizer();
         cmd = commandChecker(input); 
@@ -24,18 +29,17 @@ int main() {
         }
         else if(strcmp(cmd, "echo") == 0){
             echo(input);
-            input = toknizer(); 
-            cmd = commandChecker(input);
+            strcpy(pastcmd, input);
+            free(input);
         }
         else if(strcmp(cmd, "!!") == 0){
-            twoBangs(input);
-            input = toknizer();
-            cmd = commandChecker(input);
+            twoBangs(pastcmd);
+            strcpy(pastcmd, input);
+            free(input);
         }
         else{
             printf("Please type a valid command\n");
-            input = toknizer(); 
-            cmd = commandChecker(input);
+            free(input);
         }
     }
     
