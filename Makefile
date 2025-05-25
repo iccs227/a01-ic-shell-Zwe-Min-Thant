@@ -4,8 +4,8 @@ BINARY=icsh
 
 all: $(BINARY) 
 
-$(BINARY): ./icsh.c ./Toknizer.c ./MileStone1.c
-	$(CC) -o $(BINARY) $(CFLAGS) ./icsh.c ./Toknizer.c ./MileStone1.c
+$(BINARY): ./icsh.c ./Toknizer.c ./MileStone1.c ./MileStone2.c
+	$(CC) -o $(BINARY) $(CFLAGS) ./icsh.c ./Toknizer.c ./MileStone1.c ./MileStone2.c
 
 .PHONY: clean
 

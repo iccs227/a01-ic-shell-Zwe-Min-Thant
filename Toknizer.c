@@ -38,5 +38,4 @@ char* commandChecker(char* input){
 	strcpy(cmd, input);
 	cmd = strtok(cmd, " ");
 	return cmd;
-
 }
