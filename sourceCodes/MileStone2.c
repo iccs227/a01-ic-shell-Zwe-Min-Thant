@@ -1,9 +1,9 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include "./MileStone2.h"
-#include "./MileStone1.h"
-#include "./Toknizer.h"
+#include "./headers/MileStone2.h"
+#include "./headers/MileStone1.h"
+#include "./headers/Toknizer.h"
 
 extern int loop;
 extern int exit_code;

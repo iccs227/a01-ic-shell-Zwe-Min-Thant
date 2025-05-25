@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include "./Toknizer.h"
+#include "./headers/Toknizer.h"
 
 
 #define buffsize 255

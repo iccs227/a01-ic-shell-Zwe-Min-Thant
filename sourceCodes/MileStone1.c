@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include "./MileStone1.h"
+#include "./headers/MileStone1.h"
 
 extern int loop;
 extern int exit_code;

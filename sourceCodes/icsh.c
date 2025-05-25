@@ -6,10 +6,10 @@
 #include "stdio.h"
 #include <string.h>
 #include <stdlib.h>
-#include "./Toknizer.h"
-#include "./MileStone1.h"
-#include "./icsh.h"
-#include "./MileStone2.h"
+#include "./headers/Toknizer.h"
+#include "./headers/MileStone1.h"
+#include "./headers/icsh.h"
+#include "./headers/MileStone2.h"
 
 
 int loop; 
