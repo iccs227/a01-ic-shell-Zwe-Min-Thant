@@ -6,60 +6,108 @@
 #include "stdio.h"
 #include <string.h>
 #include <stdlib.h>
-#include "./headers/Toknizer.h"
-#include "./headers/MileStone1.h"
-#include "./headers/icsh.h"
-#include "./headers/MileStone2.h"
+#include <ctype.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <errno.h>
+#include "../headers/Toknizer.h"
+#include "../headers/MileStone1.h"
+#include "../headers/icsh.h"
+
 
 
 int loop; 
 int exit_code;
 
 int main(int argc, char* argv[]) {
+
     char* input; 
     char* cmd;
     loop = 1; 
     char* pastcmd = malloc(225 * sizeof(char));
 
+    //MileStone 2
     if(argc > 1){
+
         FILE* fp = fopen(argv[1], "r");
+
         if(fp == NULL){
             fprintf(stderr, "Error opening file %s\n", argv[1]);
             return 1;
         }
-        else{
-            input = malloc(225 * sizeof(char));
-            fileExe(fp, pastcmd, input);
-            fclose(fp);
-            free(input);
-            free(pastcmd);
-            return 0;
+
+        input = malloc(225 * sizeof(char));
+
+        while(fgets(input, 225, fp) != NULL){
+            if(isspace(input[0]) || input[0] == '#' ) {
+                continue;
+            }
+            input[strcspn(input, "\n")] = 0;
+            char* cmd = commandChecker(input);
+            commandExe(input, cmd, pastcmd);
+            free(cmd);
         }
+
+        fclose(fp);
+        free(input);
+        free(pastcmd);
+        return 0;
     }
 
     else{
         while(loop != 0){
+
             input = toknizer();
             cmd = commandChecker(input); 
+            commandExe(input, cmd, pastcmd);
+            free(input);
+            free(cmd);
 
-            if(strcmp(cmd, "exit") == 0){
-                my_exit(input);
-            }
-            else if(strcmp(cmd, "echo") == 0){
-                echo(input);
-                strcpy(pastcmd, input);
-                free(input);
-            }
-            else if(strcmp(cmd, "!!") == 0){
-                twoBangs(pastcmd);
-                strcpy(pastcmd, input);
-                free(input);
-            }
-            else{
-                printf("Please type a valid command\n");
-                free(input);
-            }
         }
+
     }
 }
 
+
+void commandExe(char* input, char* cmd, char* pastcmd){
+
+    if(strcmp(cmd, "exit") == 0){
+        my_exit(input);
+    }
+    else if(strcmp(cmd, "echo") == 0){
+        echo(input);
+        strcpy(pastcmd, input);
+    }
+    else if(strcmp(cmd, "!!") == 0){
+        twoBangs(pastcmd);
+        strcpy(pastcmd, input);
+    }
+    else{
+        createForegroundProcess(cmd, input);
+        strcpy(pastcmd, input);
+    }
+}
+
+
+//MileStone 3
+
+void createForegroundProcess(char* cmd, char* input){
+    int status; 
+    int pid;
+    printf("%s\n", cmd);
+    printf("%s\n", input);
+
+    if((pid = fork()) < 0){
+        perror("Fork failed");
+        exit(errno);
+    }
+
+    if(!pid){
+        execvp(cmd, &input);
+    }
+
+    if(pid){
+        waitpid(pid, &status, 0);
+    }
+}

@@ -2,11 +2,13 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include "./headers/Toknizer.h"
+#include "../headers/Toknizer.h"
 
 
 #define buffsize 255
 
+
+//correct
 char* toknizer(void){
 	
 	int buffersize = buffsize;
@@ -14,6 +16,7 @@ char* toknizer(void){
 	char *buffer = malloc(sizeof(char) * buffersize); 
 	int c; 
 	printf("icsh $ ");
+
 	while(1){
 		c = getchar(); 
 		
@@ -39,3 +42,4 @@ char* commandChecker(char* input){
 	cmd = strtok(cmd, " ");
 	return cmd;
 }
+
