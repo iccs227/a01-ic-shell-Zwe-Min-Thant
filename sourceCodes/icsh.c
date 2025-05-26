@@ -121,8 +121,6 @@ void createForegroundProcess(char* cmd, char* input){
     int status; 
     int i = 0;
     int pid;
-    printf("%s\n", cmd);
-    printf("%s\n", input);
 
     if((pid = fork()) < 0){
         perror("Fork failed");
