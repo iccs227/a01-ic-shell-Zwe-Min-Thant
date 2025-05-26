@@ -115,19 +115,14 @@ void commandExe(char* input, char* cmd, char* pastcmd){
 
 //MileStone 3
 
+//retoknize the input
 void createForegroundProcess(char* cmd, char* input){
 
     int status; 
     int i = 0;
     int pid;
-    char *argv[100];
-    char *token = strtok(input, " \t\n");
-
-    while(token != NULL && i < 100){
-        argv[i++] = token; 
-        token = strtok(NULL, " ");
-    }
-    argv[i] = NULL;
+    printf("%s\n", cmd);
+    printf("%s\n", input);
 
     if((pid = fork()) < 0){
         perror("Fork failed");
