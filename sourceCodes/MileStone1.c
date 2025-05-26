@@ -24,14 +24,3 @@ void twoBangs(char* String){
 	echo(String);
 }
 
-void my_exit(char *String){
-	String = strtok(String, " ");
-	String = strtok(NULL, " ");
-	exit_code = strtol(String, NULL, 10);
-	if(exit_code < 0 || exit_code > 225){ 
-		exit_code = exit_code & 0xFF;
-	}
-	printf("Bye\n");
-	loop = 0; 
-}
-

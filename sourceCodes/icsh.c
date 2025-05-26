@@ -11,6 +11,7 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <errno.h>
+#include <signal.h>
 #include "../headers/Toknizer.h"
 #include "../headers/MileStone1.h"
 #include "../headers/icsh.h"
@@ -19,8 +20,22 @@
 
 int loop; 
 int exit_code;
+int fg_pid = -1; 
 
 int main(int argc, char* argv[]) {
+    struct sigaction sa;
+    struct sigaction sa2;
+
+    sa.sa_handler = sigint; 
+    sigfillset(&sa.sa_mask);
+    sa.sa_flags = SA_RESTART; 
+    sigaction(SIGINT, &sa, NULL);
+
+    sa2.sa_handler = sigtstp;
+    sigfillset(&sa2.sa_mask);
+    sa2.sa_flags = SA_RESTART;
+    sigaction(SIGTSTP, &sa2, NULL);
+
 
     char* input; 
     char* cmd;
@@ -73,7 +88,15 @@ int main(int argc, char* argv[]) {
 void commandExe(char* input, char* cmd, char* pastcmd){
 
     if(strcmp(cmd, "exit") == 0){
-        my_exit(input);
+        input = strtok(input, " ");
+	    input = strtok(NULL, " ");
+        exit_code = strtol(input, NULL, 10);
+        if(exit_code < 0 || exit_code > 225){ 
+		    exit_code = exit_code & 0xFF;
+	    }
+        printf("BYE\n");
+        exit(exit_code);
+        
     }
     else if(strcmp(cmd, "echo") == 0){
         echo(input);
@@ -93,19 +116,18 @@ void commandExe(char* input, char* cmd, char* pastcmd){
 //MileStone 3
 
 void createForegroundProcess(char* cmd, char* input){
+
     int status; 
-    int pid;
     int i = 0;
+    int pid;
     char *argv[100];
     char *token = strtok(input, " \t\n");
+
     while(token != NULL && i < 100){
         argv[i++] = token; 
         token = strtok(NULL, " ");
     }
     argv[i] = NULL;
-
-    printf("%s\n", cmd);
-    printf("%s\n", input);
 
     if((pid = fork()) < 0){
         perror("Fork failed");
@@ -113,11 +135,40 @@ void createForegroundProcess(char* cmd, char* input){
     }
 
     if(!pid){
+        printf("Child process created with PID: %d\n", getpid());
         execvp(cmd, argv);
     }
 
     if(pid){
+        fg_pid = pid;
         waitpid(pid, &status, 0);
     }
     free(token);
 }
+
+//MileStone 4
+void sigtstp(int sig){
+    if(fg_pid > 0){
+        kill(fg_pid, SIGSTOP);
+    }
+    else{
+        printf("\n");
+        printf("icsh $");
+        fflush(stdout);
+    } 
+}
+
+void sigint(int sig){
+    printf("%d", fg_pid);
+    if(fg_pid > 0){
+        kill(fg_pid, SIGINT);
+    }
+    else{
+        printf("\n");
+        printf("icsh $");
+        fflush(stdout);
+    }
+}
+
+
+

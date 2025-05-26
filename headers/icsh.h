@@ -3,5 +3,7 @@
 
 void commandExe(char* cmd, char* input, char* pastcmd);
 void createForegroundProcess(char* cmd, char* input);
+void sigtstp(int sig);
+void sigint(int sig);
 
 #endif

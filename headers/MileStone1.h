@@ -3,6 +3,5 @@
 
 void echo(char* String);
 void twoBangs(char* String);
-void my_exit(char *String); 
 
 #endif
