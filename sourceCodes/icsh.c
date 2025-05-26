@@ -95,6 +95,15 @@ void commandExe(char* input, char* cmd, char* pastcmd){
 void createForegroundProcess(char* cmd, char* input){
     int status; 
     int pid;
+    int i = 0;
+    char *argv[100];
+    char *token = strtok(input, " \t\n");
+    while(token != NULL && i < 100){
+        argv[i++] = token; 
+        token = strtok(NULL, " ");
+    }
+    argv[i] = NULL;
+
     printf("%s\n", cmd);
     printf("%s\n", input);
 
@@ -104,10 +113,11 @@ void createForegroundProcess(char* cmd, char* input){
     }
 
     if(!pid){
-        execvp(cmd, &input);
+        execvp(cmd, argv);
     }
 
     if(pid){
         waitpid(pid, &status, 0);
     }
+    free(token);
 }
