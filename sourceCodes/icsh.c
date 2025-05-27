@@ -21,7 +21,7 @@
 int loop; 
 int exit_code;
 int fg_pid = -1;
-pid_t main_pid;
+int stopped_pid;
 
 int main(int argc, char* argv[]) {
     struct sigaction sa;
@@ -30,7 +30,6 @@ int main(int argc, char* argv[]) {
     signal(SIGTTOU, SIG_IGN);
     signal(SIGTTIN, SIG_IGN);
 
-    main_pid = getpid();
 
     sa.sa_handler = sigint;
     sigfillset(&sa.sa_mask);
@@ -150,18 +149,11 @@ void createForegroundProcess(char* cmd, char* input){
 
 
     if (pid){
-        printf("1\n");
         fg_pid = pid;
-        printf("2\n");
         setpgid(pid, pid);
-        printf("3\n");
         tcsetpgrp(STDIN_FILENO, pid);
-        printf("4\n");
         waitpid(pid, &status, WUNTRACED);
-        printf("5\n");
-        tcsetpgrp(STDIN_FILENO, main_pid);
-        printf("done.\n");
-
+        tcsetpgrp(STDIN_FILENO, getpid());
         fg_pid = -1;
     }
 
@@ -171,6 +163,7 @@ void createForegroundProcess(char* cmd, char* input){
 void sigtstp(int sig){
     if(fg_pid > 0){
         kill(fg_pid, SIGTSTP);
+        stopped_pid = fg_pid;
     }
     else{
         printf("\n");
@@ -191,4 +184,16 @@ void sigint(int sig){
 }
 
 
+void sendProcesstoFG() {
+
+    if (stopped_pid == -1) {
+        printf("No job to bring to foreground\n");
+        return;
+    }
+
+    fg_pid = stopped_pid;
+    tcsetpgrp(STDIN_FILENO, fg_pid);
+    kill
+
+}
 

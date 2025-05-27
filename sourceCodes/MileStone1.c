@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include "../headers/MileStone1.h"
 
+#include <unistd.h>
+
 extern int loop;
 extern int exit_code;
 
@@ -23,4 +25,6 @@ void twoBangs(char* String){
 	printf("%s\n", String);
 	echo(String);
 }
+
+
 
