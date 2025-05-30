@@ -21,9 +21,12 @@
 int loop; 
 int exit_code;
 int fg_pid = -1;
-int stopped_pid;
+int last_status;
+int background = 0; 
 
 int main(int argc, char* argv[]) {
+
+    
     struct sigaction sa;
     struct sigaction sa2;
 
@@ -44,6 +47,7 @@ int main(int argc, char* argv[]) {
     char* input; 
     char* cmd;
     loop = 1; 
+
     char* pastcmd = malloc(225 * sizeof(char));
 
     //MileStone 2
@@ -90,28 +94,40 @@ int main(int argc, char* argv[]) {
 
 void commandExe(char* input, char* cmd, char* pastcmd){
 
+    if(strcmp(cmd, "echo $?") == 0){
+        printf("%d\n", last_status);
+        return;
+    }
+
+    if(input[strlen(input) - 1] == '&'){
+        background = 1; 
+        input[strlen(input) - 1] = '\0';
+        printf("%s", input);
+        createForegroundProcess(cmd, input, background);
+        strcpy(pastcmd, input);
+        background = 0; 
+        return; 
+    }
+
     if(strcmp(cmd, "exit") == 0){
         input = strtok(input, " ");
 	    input = strtok(NULL, " ");
-        exit_code = strtol(input, NULL, 10);
-        if(exit_code < 0 || exit_code > 225){ 
-		    exit_code = exit_code & 0xFF;
-	    }
         printf("BYE\n");
-        exit(exit_code);
-        
+        my_exit(input);
+        return;
     }
-    else if(strcmp(cmd, "echo") == 0){
+    if(strcmp(cmd, "echo") == 0){
         echo(input);
         strcpy(pastcmd, input);
     }
-    else if(strcmp(cmd, "!!") == 0){
+    if(strcmp(cmd, "!!") == 0){
         twoBangs(pastcmd);
         strcpy(pastcmd, input);
     }
     else{
-        createForegroundProcess(cmd, input);
+        createForegroundProcess(cmd, input, background);
         strcpy(pastcmd, input);
+        printf("\n");
     }
 }
 
@@ -119,7 +135,7 @@ void commandExe(char* input, char* cmd, char* pastcmd){
 //MileStone 3
 
 //retoknize the input
-void createForegroundProcess(char* cmd, char* input){
+void createForegroundProcess(char* cmd, char* input, int background){
 
     int status;
     int pid;
@@ -128,9 +144,11 @@ void createForegroundProcess(char* cmd, char* input){
     char *token = strtok(input, " \t\n");
     while(token != NULL && i < 100){
         argv[i++] = token;
-        token = strtok(NULL, " ");
+        token = strtok(NULL, " \t\n");
     }
     argv[i] = NULL;
+    printf("\n");
+    
 
     pid = fork();
     if(pid < 0){
@@ -140,8 +158,8 @@ void createForegroundProcess(char* cmd, char* input){
 
     if(pid == 0){
         setpgid(0, 0);
-        tcsetpgrp(STDIN_FILENO, getpid());
-        printf("Child process created with PID: %d\n", getpid());
+        signal(SIGINT, SIG_DFL);
+        signal(SIGTSTP, SIG_DFL);
         execvp(cmd, argv);
         perror("Execvp failed");
         exit(errno);
@@ -149,12 +167,27 @@ void createForegroundProcess(char* cmd, char* input){
 
 
     if (pid){
-        fg_pid = pid;
+
         setpgid(pid, pid);
-        tcsetpgrp(STDIN_FILENO, pid);
-        waitpid(pid, &status, WUNTRACED);
-        tcsetpgrp(STDIN_FILENO, getpid());
-        fg_pid = -1;
+
+        if(!background){
+            fg_pid = pid;
+            tcsetpgrp(STDIN_FILENO, pid);
+            waitpid(pid, &status, WUNTRACED);
+            tcsetpgrp(STDIN_FILENO, getpid());
+            if(WIFEXITED(status)){
+                last_status = WEXITSTATUS(status);
+            }   
+            else if(WIFSIGNALED(status)){
+                last_status = 128 + WTERMSIG(status);
+            }
+            else{
+                last_status = -1;
+            }
+
+            fg_pid = -1;
+        }
+  
     }
 
 }
@@ -162,38 +195,14 @@ void createForegroundProcess(char* cmd, char* input){
 //MileStone 4
 void sigtstp(int sig){
     if(fg_pid > 0){
-        kill(fg_pid, SIGTSTP);
-        stopped_pid = fg_pid;
-    }
-    else{
-        printf("\n");
-        printf("icsh $");
-        fflush(stdout);
+        kill(-fg_pid, SIGTSTP);
     }
 }
 
 void sigint(int sig){
     if(fg_pid > 0){
-        kill(fg_pid, SIGINT);
-    }
-    else{
-        printf("\n");
-        printf("icsh $");
-        fflush(stdout);
+        kill(-fg_pid, SIGINT);
     }
 }
 
-
-void sendProcesstoFG() {
-
-    if (stopped_pid == -1) {
-        printf("No job to bring to foreground\n");
-        return;
-    }
-
-    fg_pid = stopped_pid;
-    tcsetpgrp(STDIN_FILENO, fg_pid);
-    kill
-
-}
 

@@ -28,3 +28,10 @@ void twoBangs(char* String){
 
 
 
+void my_exit(char *String){
+	exit_code = strtol(String, NULL, 10);
+	if(exit_code < 0 || exit_code > 225){ 
+		exit_code = exit_code & 0xFF;
+	}
+	loop = 0; 
+}

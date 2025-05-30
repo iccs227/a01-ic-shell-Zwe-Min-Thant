@@ -11,4 +11,3 @@ $(BINARY): ./sourceCodes/icsh.c ./sourceCodes/Toknizer.c ./sourceCodes/MileStone
 
 clean:
 	rm -f sourceCodes/*.o $(BINARY)
-   
