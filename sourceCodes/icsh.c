@@ -20,6 +20,8 @@
 
 int loop; 
 int exit_code;
+int background = 0;
+int last_status;
 int fg_pid = -1;
 int last_status;
 int background = 0; 
@@ -29,7 +31,7 @@ int main(int argc, char* argv[]) {
     
     struct sigaction sa;
     struct sigaction sa2;
-
+    //
     signal(SIGTTOU, SIG_IGN);
     signal(SIGTTIN, SIG_IGN);
 
@@ -116,6 +118,10 @@ void commandExe(char* input, char* cmd, char* pastcmd){
         my_exit(input);
         return;
     }
+    else if (strcmp(input, "echo $?") == 0) {
+        printf("%d", last_status);
+        strcpy(pastcmd, input);
+    }
     if(strcmp(cmd, "echo") == 0){
         echo(input);
         strcpy(pastcmd, input);
@@ -123,6 +129,13 @@ void commandExe(char* input, char* cmd, char* pastcmd){
     if(strcmp(cmd, "!!") == 0){
         twoBangs(pastcmd);
         strcpy(pastcmd, input);
+    }
+    else if (input[strlen(input) - 1] == '&') {
+        background = 1;
+        input[strlen(input)-1] = '\0';
+        createForegroundProcess(cmd, input, background);
+        strcpy(pastcmd, input);
+        printf("\n");
     }
     else{
         createForegroundProcess(cmd, input, background);
@@ -151,6 +164,7 @@ void createForegroundProcess(char* cmd, char* input, int background){
     
 
     pid = fork();
+
     if(pid < 0){
         perror("Fork failed");
         exit(errno);
@@ -195,7 +209,8 @@ void createForegroundProcess(char* cmd, char* input, int background){
 //MileStone 4
 void sigtstp(int sig){
     if(fg_pid > 0){
-        kill(-fg_pid, SIGTSTP);
+        kill(fg_pid, SIGTSTP);
+        stopped_pid = fg_pid;
     }
 }
 
