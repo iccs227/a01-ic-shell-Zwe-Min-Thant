@@ -8,6 +8,7 @@
 #define buffsize 255
 
 
+
 //correct
 char* toknizer(void){
 	
@@ -18,7 +19,7 @@ char* toknizer(void){
 	printf("icsh $ ");
 
 	while(1){
-		c = getchar(); 
+		c = getchar();
 		
 		if(c == EOF || c == '\n'){ 
 			buffer[pos] = '\0';

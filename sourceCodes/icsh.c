@@ -23,8 +23,7 @@ int exit_code;
 int background = 0;
 int last_status;
 int fg_pid = -1;
-int last_status;
-int background = 0; 
+int IOredirectFlags = 0;
 
 int main(int argc, char* argv[]) {
 
@@ -155,13 +154,14 @@ void createForegroundProcess(char* cmd, char* input, int background){
     int i = 0;
     char *argv[100];
     char *token = strtok(input, " \t\n");
+    char* InFile;
+    char* OutFile;
+
     while(token != NULL && i < 100){
         argv[i++] = token;
         token = strtok(NULL, " \t\n");
     }
     argv[i] = NULL;
-    printf("\n");
-    
 
     pid = fork();
 
@@ -210,7 +210,6 @@ void createForegroundProcess(char* cmd, char* input, int background){
 void sigtstp(int sig){
     if(fg_pid > 0){
         kill(fg_pid, SIGTSTP);
-        stopped_pid = fg_pid;
     }
 }
 
@@ -221,3 +220,10 @@ void sigint(int sig){
 }
 
 
+int checkForIORedirect(char* input, char* InFile, char* OutFile){
+    for(int i = 0; i < strlen(input); i++){
+        if(input[i] == '<'){
+            InFile = `
+        }
+    }
+}
