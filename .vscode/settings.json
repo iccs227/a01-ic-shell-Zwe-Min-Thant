@@ -1,5 +1,7 @@
 {
     "files.associations": {
-        "cstdlib": "c"
+        "cstdlib": "c",
+        "signal.h": "c",
+        "stdio.h": "c"
     }
 }
