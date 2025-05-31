@@ -235,7 +235,7 @@ void createForegroundProcess(char* cmd, char* input, int background){
 void sigtstp(int sig){
     if(fg_pid > 0){
         kill(fg_pid, SIGTSTP);
-        jobs[getpidbyjid(fg_pid) - 1].status = "STOPPED";
+        jobs[getjidbypid(fg_pid) - 1].status = "STOPPED";
     }
 }
 
@@ -350,7 +350,7 @@ void printJobs(){
     }
 }
 
-int c(int pid) {
+int getjidbypid(int pid) {
     for (int i = 0; i < 16; i++) {
         if (jobs[i].pid == pid)
             return i + 1; 
